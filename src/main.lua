@@ -1,9 +1,23 @@
-local MenusRegistered, currentVisible = {}, nil
+local MenusRegistered, currentVisible, menuHistory = {}, nil, {}
 
 local function PlayExports(export, ...)
     local resourceName <const> = export:match('(.+)%..+')
     local methodName <const> = export:match('.+%.(.+)')
     return exports[resourceName][methodName](nil, ...)
+end
+
+--- Adds a menu ID to the menu history.
+--- @param menuId number The ID of the menu to add.
+local function AddMenuToHistory(menuId)
+    if #menuHistory == 0 or menuHistory[#menuHistory] ~= menuId then
+        menuHistory[#menuHistory + 1] = menuId
+    end
+end
+
+local function RemoveLastMenuFromHistory()
+    local lastId = menuHistory[#menuHistory]
+    menuHistory[#menuHistory] = nil
+    return lastId
 end
 
 ---@class SubRegisterMenuProps
@@ -43,6 +57,22 @@ local function OpenMenu(id, subId)
     PlayExports(exp, id, subId)
 
     currentVisible = id
+    AddMenuToHistory(id)
+end
+
+local function GoBack()
+    if #menuHistory > 1 then
+        RemoveLastMenuFromHistory()
+        currentVisible = nil
+        local lastMenuId = RemoveLastMenuFromHistory()
+        OpenMenu(lastMenuId) 
+    elseif #menuHistory == 1 then
+        PlayExports(MenusRegistered[currentVisible].env .. '.CloseMenu', currentVisible)
+        menuHistory = {}
+        currentVisible = nil
+    else
+        warn('No previous menu in history')
+    end
 end
 
 local function CloseMenu()
@@ -75,6 +105,7 @@ exports('RegisterMenu', RegisterMenu)
 exports('OpenMenu', OpenMenu)
 exports('CloseMenu', CloseMenu)
 exports('CurrentOpen', CurrentOpen)
+exports('GoBack', GoBack)
 exports('UpdateMenu', UpdateMenu)
 
 
