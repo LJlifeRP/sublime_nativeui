@@ -7,7 +7,7 @@ local function PlayExports(export, ...)
 end
 
 --- Adds a menu ID to the menu history.
---- @param menuId number The ID of the menu to add.
+--- @param menuId string The ID of the menu to add.
 local function AddMenuToHistory(menuId)
     if #menuHistory == 0 or menuHistory[#menuHistory] ~= menuId then
         menuHistory[#menuHistory + 1] = menuId
