@@ -268,6 +268,11 @@ function nativeui:AddSubMenu(_menu)
     return self.submenu[_menu.id]
 end
 
+function nativeui:GoBack()
+    if not self.opened then return end
+    exports[s_ui]:GoBack()
+end
+
 function nativeui:Close()
     if not self.opened then return end
     self.opened = false
@@ -297,9 +302,9 @@ function nativeui:GoPool()
 end
 
 local function OpenMenu(id)
-   if Menus[id] then
-       Menus[id]:Open()
-   end 
+    if Menus[id] then
+        Menus[id]:Open()
+    end 
 end
 
 local function CloseMenu(id)
